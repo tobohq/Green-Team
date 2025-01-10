@@ -1,1 +1,40 @@
+Prompt: 
+Please generate a standard clock divider module for a Basys 3 Board using Verlog. The board has a 100MHz clock. 
+
+Use these as inputs and outputs:
+module clock_divider(
+    input wire clk_in,     // Input clock: 100MHz
+    input wire reset,      // Reset signal
+    output reg clk_out     // Output divided clock
+);
+
+ChatGPT Response:
+module clock_divider(
+    input wire clk_in,     // Input clock: 100MHz
+    input wire reset,      // Reset signal
+    output reg clk_out     // Output divided clock
+);
+
+    // Parameter to set the division factor
+    // For example, to divide by 2^N, use (2^N)/2 = 2^(N-1)
+    parameter DIV_FACTOR = 50000000; // Divide 100MHz to 1Hz (50M counts)
+
+    // Counter for clock division
+    reg [$clog2(DIV_FACTOR)-1:0] counter = 0;
+
+    always @(posedge clk_in or posedge reset) begin
+        if (reset) begin
+            counter <= 0;
+            clk_out <= 0;
+        end else begin
+            if (counter == DIV_FACTOR - 1) begin
+                counter <= 0;
+                clk_out <= ~clk_out; // Toggle the output clock
+            end else begin
+                counter <= counter + 1;
+            end
+        end
+    end
+
+endmodule
 
